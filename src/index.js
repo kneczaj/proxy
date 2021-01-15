@@ -26,7 +26,7 @@ function logError(e) {
 }
 
 // this proxy will handle regular HTTP requests
-var regularProxy = new httpProxy.RoutingProxy();
+var regularProxy = new httpProxy.createProxyServer({});
 
 // standard HTTP server that will pass requests
 // to the proxy
