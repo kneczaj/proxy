@@ -3,10 +3,10 @@
 
 // requires https://github.com/nodejitsu/node-http-proxy
 
-var httpProxy = require('http-proxy'),
-	url = require('url'),
-	net = require('net'),
-	http = require('http');
+import * as httpProxy from 'http-proxy';
+import * as http from "http";
+import * as url from "url";
+import * as net from "net";
 
 process.on('uncaughtException', logError);
 
@@ -32,7 +32,7 @@ var regularProxy = new httpProxy.createProxyServer({});
 // to the proxy
 var server = http.createServer(function (req, res) {
   logRequest(req);
-  uri = url.parse(req.url);
+  const uri = url.parse(req.url);
   regularProxy.proxyRequest(req, res, {
   	host: uri.hostname,
   	port: uri.port || 80
