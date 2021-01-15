@@ -5,7 +5,7 @@
   "license": "CC0-1.0",
   "scripts": {
     "start": "ts-node --project ./tsconfig.json ./src/index.ts",
-    "test": "jest --runInBand"
+    "test": "NODE_EXTRA_CA_CERTS=test/cert/test.crt jest --runInBand"
   },
   "dependencies": {
     "express": "^4.17.1",
@@ -25,6 +25,11 @@
     "ts-jest": "^26.4.4"
   },
   "jest": {
-    "preset": "ts-jest"
+    "preset": "ts-jest",
+    "globals": {
+      "ts-jest": {
+        "tsconfig": "./tsconfig.spec.json"
+      }
+    }
   }
 }
