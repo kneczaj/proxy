@@ -6,5 +6,8 @@
       "mocha",
       "jest"
     ]
-  }
+  },
+  "include": [
+    "test/**/*.ts"
+  ]
 }
