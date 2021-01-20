@@ -34,7 +34,7 @@ describe('Proxy', () => {
   it('passes Websocket', async () => {
     const server = runWsServer(4002);
     const ws = new WebSocket(`ws://${HOST}:${WS_PORT}`);
-    await new Promise<void>(resolve => {
+    const result = await new Promise<string>(resolve => {
       ws.on('open', function open() {
         console.log(`Client: opened`);
         ws.send('message');
@@ -49,8 +49,9 @@ describe('Proxy', () => {
 
       ws.on('close', () => {
         server.close();
-        resolve();
+        resolve('success');
       });
     });
+    expect(result).toBe('success');
   });
 });
