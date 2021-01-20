@@ -1,28 +1,15 @@
-// HTTP forward proxy server that can also proxy HTTPS requests
-// using the CONNECT method
-// requires https://github.com/nodejitsu/node-http-proxy
-
 import * as http from "http";
 import * as net from "net";
 import * as express from 'express';
 import * as proxy from 'express-http-proxy';
 
-process.on('uncaughtException', logError);
-
-function truncate(str) {
-	const maxLength = 64;
-	return (str.length >= maxLength ? str.substring(0,maxLength) + '...' : str);
-}
+process.on('uncaughtException', e => console.warn('*** ' + e));
 
 function logRequest(req) {
-	console.log(req.method + ' ' + truncate(req.url));
-	req.headers.forEach((header, i) =>
-		console.log(' * ' + i + ': ' + truncate(req.headers[i]))
-	);
-}
-
-function logError(e) {
-	console.warn('*** ' + e);
+	console.log(req.method + ' ' + req.url);
+	for (var i in req.headers) {
+		console.log(' * ' + i + ': ' + req.headers[i]);
+	}
 }
 
 const app = express();
