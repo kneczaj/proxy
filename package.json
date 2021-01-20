@@ -5,7 +5,7 @@
   "license": "CC0-1.0",
   "scripts": {
     "start": "ts-node --project ./tsconfig.json ./src/index.ts",
-    "test": "NODE_EXTRA_CA_CERTS=test/cert/test.crt jest --runInBand --detectOpenHandles"
+    "test": "HTTP_PROXY=http://localhost.fakedomain.com:3333 HTTPS_PROXY='http://localhost.fakedomain.com:3333 NODE_EXTRA_CA_CERTS=test/cert/test.crt jest --runInBand --detectOpenHandles"
   },
   "dependencies": {
     "express": "^4.17.1",
