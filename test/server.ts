@@ -4,6 +4,9 @@ import * as fs from "fs";
 import * as path from "path";
 import * as https from "https";
 import * as  cors from "cors";
+import { Server as WSServer} from 'ws';
+//@ts-ignore
+import StompServer from 'stomp-broker-js/stompServer';
 
 https.globalAgent.options.rejectUnauthorized = false;
 
@@ -37,4 +40,20 @@ export function runHttpsServer(port: number): Promise<https.Server> {
       resolve(server);
     });
   });
+}
+
+export function runWsServer(port: number) {
+  const wss = new WSServer({
+    port,
+    perMessageDeflate: false
+  });
+  wss.on('connection', function connection(ws) {
+    ws.on('message', function incoming(message) {
+      if (message === 'close') {
+        ws.close();
+      }
+    });
+    ws.send('server confirms connection');
+  });
+  return wss;
 }
