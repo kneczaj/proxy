@@ -1,4 +1,4 @@
-import { runHttpServer, runHttpsServer, runWsServer } from "./server";
+import { runHttpServer, runHttpsServer, runWsServer, runWssServer } from "./server";
 import axios from "axios";
 import * as https from "https";
 import * as WebSocket from 'ws';
@@ -31,10 +31,9 @@ describe('Proxy', () => {
       server.close();
     }
   });
-  it('passes Websocket', async () => {
-    const server = runWsServer(4002);
-    const ws = new WebSocket(`ws://${HOST}:${WS_PORT}`);
-    const result = await new Promise<string>(resolve => {
+
+  function testWebsocket(ws: WebSocket) {
+    return new Promise<string>(resolve => {
       ws.on('open', function open() {
         console.log(`Client: opened`);
         ws.send('message');
@@ -48,10 +47,24 @@ describe('Proxy', () => {
       });
 
       ws.on('close', () => {
-        server.close();
         resolve('success');
       });
     });
+  }
+
+  it('passes Websocket', async () => {
+    const server = runWsServer(WS_PORT);
+    const ws = new WebSocket(`ws://${HOST}:${WS_PORT}`);
+    const result = await testWebsocket(ws);
+    server.close();
+    expect(result).toBe('success');
+  });
+  it('passes Websocket over HTTPS', async () => {
+    const { server, wss } = await runWssServer(WSS_PORT);
+    const ws = new WebSocket(`wss://${HOST}:${WSS_PORT}`);
+    const result = await testWebsocket(ws);
+    wss.close();
+    server.close();
     expect(result).toBe('success');
   });
 });

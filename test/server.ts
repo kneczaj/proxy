@@ -42,11 +42,7 @@ export function runHttpsServer(port: number): Promise<https.Server> {
   });
 }
 
-export function runWsServer(port: number) {
-  const wss = new WSServer({
-    port,
-    perMessageDeflate: false
-  });
+function attachWSEvents(wss: WSServer) {
   wss.on('connection', function connection(ws) {
     ws.on('message', function incoming(message) {
       if (message === 'close') {
@@ -56,4 +52,30 @@ export function runWsServer(port: number) {
     ws.send('server confirms connection');
   });
   return wss;
+}
+
+export function runWsServer(port: number) {
+  const wss = new WSServer({
+    port,
+    perMessageDeflate: false
+  });
+  return attachWSEvents(wss);
+}
+
+export function runWssServer(port: number) {
+  const key = fs.readFileSync(path.join(__dirname, 'cert', 'test.key'), 'utf-8');
+  const cert = fs.readFileSync(path.join(__dirname, 'cert', 'test.crt'), 'utf-8');
+  return new Promise<{ server: https.Server, wss: WSServer }>(resolve => {
+    const server = https.createServer({key, cert});
+    server.addListener('upgrade', (req, res, head) => console.log('UPGRADE:', req.url));
+    server.on('error', (err) => console.error(err));
+    const wss = new WSServer({
+      server
+    });
+    attachWSEvents(wss);
+    server.listen(port, () => {
+      console.log(`WS on HTTPS server listening at http://localhost:${port}`);
+      resolve({server, wss});
+    });
+  });
 }
